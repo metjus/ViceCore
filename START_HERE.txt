@@ -1,0 +1,39 @@
+VICECORE — PREMIUM EDITION / 2026
+================================
+
+RÝCHLE SPUSTENIE
+1. Rozbaľ celý ZIP aj s priečinkom assets.
+2. Otvor hlavný index.html. Slovenská verzia: sk/index.html, česká: cz/index.html.
+3. Menu a interné odkazy používajú konkrétne index.html cesty. Fungujú aj z lokálneho disku.
+4. Pre nasadenie nahraj všetky súbory ZIPu do public_html, www alebo htdocs.
+5. Po nahratí novej verzie na existujúcu doménu použi Ctrl+Shift+R.
+
+NOVÝ DIZAJN
+- Plnoformátový hero s lokálnou ilustráciou 3760x1340 px a tromi voliteľnými scénami.
+- Veľká redakčná typografia, veľkorysé sekcie, asymetrické karty, horizontálna galéria.
+- Animácie viazané na scroll: jemný parallax úvodnej ilustrácie, odhaľovanie sekcií,
+  zvýrazňovanie čítania a drobný vertikálny pohyb fotografií v galérii.
+- Interakcie pri hoveri, horizontálne posúvanie galérie, navigácia reagujúca na scroll.
+- Mobilný dizajn a šetrnejší režim pri nastavení Reduce motion / Obmedziť pohyb.
+- Žiadne potrebné externé JS frameworky ani runtime build; web je statický.
+
+VIZUÁLY
+Súčasťou ZIPu sú fyzické WebP súbory, nie externé pozadia cez URL.
+Hlavný obrázok má 3760x1340 px, ďalšie panorámy 2040x1080 px.
+Poznámka: niektoré podporné vizuály pochádzajú z upravených výrezov
+vytvorených pri tvorbe konceptu. Pre plne komerčné finálne nasadenie
+odporúčame nové samostatné ilustrácie v natívnom rozlíšení.
+Žiadne ilustračné vizuály neoznačuj ako oficiálne snímky z hry.
+
+OBSAH A FUNKCIE
+52 SK/CZ obsahových stránok + vstupná a 404. Vyhľadávanie, záložky,
+filtre a lokálna anketa fungujú v prehliadači. Redakčný obsah je
+štartovacia ukážka, nie overený živý spravodajský zdroj.
+Verejné komentáre, registrácie a administrácia zatiaľ neexistujú:
+vyžadujú backend.
+
+ZDROJOVÝ PROJEKT
+Ak máš ZIP označený 'source', môžeš editovať source/templates,
+source/content.py a potom spustiť python build.py (vyžaduje Jinja2).
+Nové štýly: assets/css/premium.css
+Nové správanie: assets/js/premium.js
