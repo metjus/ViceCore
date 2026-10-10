@@ -1,0 +1,2 @@
+export function risks(text){const flags=[];if(/https?:\/\/|www\./i.test(text))flags.push('external');if(/(dpd|packeta|dhl|gls|kuri[eé]r)/i.test(text)&&/(plat|kart|odkaz|link|refund|prija|vyzdvih)/i.test(text))flags.push('courier');if(/(cvc|cvv|pin|č[ií]slo karty|cislo karty|údaje karty|udaje karty)/i.test(text))flags.push('card');return flags;}
+export const categories=['Elektronika','Domov','Šport','Hry a konzoly','Móda','Ostatné'];
