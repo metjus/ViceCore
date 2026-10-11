@@ -32,7 +32,14 @@ for lang in ['sk','cz']:
  assert any(n=='a' and t.get('href')==f'/{lang}/databaza/?kategoria=location' for n,t in tags)
  assert not any(t.get('id')=='questions' or 'dispatch' in t.get('class','').split() for n,t in tags)
  home=(R/lang/'index.html').read_text()
- assert '19. 11. 2026' not in home and 'Zatiaľ bez odpovede' not in home and 'Zatím bez odpovědi' not in home
+ assert 'Zatiaľ bez odpovede' not in home and 'Zatím bez odpovědi' not in home
+ assert sum('data-countdown-unit' in t for n,t in tags)==4
+ assert any('data-countdown' in t for n,t in tags)
+ assert sum(n=='a' and t.get('href')==f'/{lang}/mapa/' for n,t in tags)==3
+ map_page=(R/lang/'mapa/index.html').read_text()
+ assert ('Mapa města bude zpřístupněna po vydání GTA VI.' if lang=='cz' else 'Mapa mesta bude sprístupnená po vydaní GTA VI.') in map_page
+ assert f'href="/{"sk" if lang=="cz" else "cz"}/mapa/"' in map_page
+ assert f'rel="canonical" href="https://vicecore.matus-sturdik1.workers.dev/{lang}/mapa/"' in map_page
  assert all(t['data-save-id'].startswith('database:') for n,t in tags if 'data-save-id' in t)
  assert sum('category' in t.get('class','').split() for n,t in tags)==5
  assert sum('dossier' in t.get('class','').split() for n,t in tags)==5

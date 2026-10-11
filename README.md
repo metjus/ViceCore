@@ -1,6 +1,6 @@
 # ViceCore
 
-Statický fanúšikovský portál GTA VI v slovenčine a češtine. Má 56 HTML stránok vrátane vstupu a 404, databázu, články a rozbor ôsmich záberov Traileru 1. Uložené profily, miesta, články a voľba témy používajú iba lokálne úložisko prehliadača. Homepage je rozcestník databázy, nezávislý od dátumu vydania. Formulár v úvode smeruje do databázy pomocou `?q=`; kategórie používajú `?kategoria=`.
+Statický fanúšikovský portál GTA VI v slovenčine a češtine. Má 58 HTML stránok vrátane vstupu a 404, databázu, články a rozbor ôsmich záberov Traileru 1. Uložené profily, miesta, články a voľba témy používajú iba lokálne úložisko prehliadača. Homepage je rozcestník databázy s animovaným odpočtom do dňa vydania. Po dosiahnutí dátumu odpočet automaticky vystrieda stav „GTA VI je vonku“. Položka „Mapa mesta“ otvára stránku s informáciou, že mapa bude sprístupnená po vydaní; samotná mapa ešte nie je implementovaná. Formulár v úvode smeruje do databázy pomocou `?q=`; kategórie používajú `?kategoria=`.
 
 Dizajn používa koralovú, pieskovú a tmavú petrolejovú farbu. Logo je SVG, favicon používa monogram VC a fonty sú uložené lokálne. Úvodný nadpis a desktopový rozcestník sú v spoločnej mriežke; mobilné menu sa používa do 1024 px. Sekcie rastú podľa obsahu a respektujú znížený pohyb. Tmavé pozadie je nastavené priamo v HTML pred načítaním CSS.
 
@@ -15,6 +15,7 @@ node redesign/verify-interactions.cjs
 node redesign/verify-saves.cjs
 node redesign/verify-portal.cjs
 node redesign/verify-trailer.cjs
+node redesign/verify-countdown.cjs
 ```
 
 Výstup je v `dist/`. Produkcia nepotrebuje Python ani Node.js. Koreňový `index.html` obsahuje slovenskú homepage priamo, bez presmerovania.
@@ -24,9 +25,10 @@ Výstup je v `dist/`. Produkcia nepotrebuje Python ani Node.js. Koreňový `inde
 ## Úpravy
 
 - `redesign/generate.py`: obe homepage.
+- `redesign/release.json`: dátum vydania a odpočet do začiatku daného dňa v Bratislave (nejde o potvrdenú hodinu spustenia). Pri zmene termínu ho treba aktualizovať a web znovu publikovať.
 - `redesign/portal.py`: spoločné vnútorné stránky.
 - `redesign/trailer.py`: rozbor traileru.
 - `assets/css/editorial.css`, `portal.css`, `trailer.css`: spoločný dizajn a doplnkové rozloženia.
-- `assets/js/editorial.js`, `home-saves.js`, `portal.js`, `trailer.js`: navigácia, hľadanie, lokálne uloženie a prehrávač.
+- `assets/js/editorial.js`, `home-saves.js`, `portal.js`, `trailer.js`, `countdown.js`: navigácia, hľadanie, lokálne uloženie a prehrávač.
 
 Oficiálne zábery uvádzajú zdroj Rockstar Games. Ilustračné obrázky sú fan art. Obsah je statický; web zatiaľ nemá redakčný systém ani spoločné používateľské účty. Kanonické URL a sitemap treba pri zmene produkčnej domény aktualizovať.

@@ -71,6 +71,20 @@ for width in widths:
                 measured=text_width(text,size,spacing)
                 assert measured<=budget+1,f'{lang} {ident} at {width}px: text {measured:.1f}px exceeds {budget:.1f}px'
                 checks+=1
+    # Newly added timer cells must fit even with a three-digit day count.
+    clock_width=min(480,hero_width)
+    number_size=length(style(['.countdown-number'],width)['font-size'],width)
+    assert text_width('999',number_size,0)<=clock_width/4-10+1,f'Countdown overflow at {width}px'
+    if width>1024:
+        logo=length(style(['.wordmark .brand-logo'],width)['width'],width)
+        text_font=ImageFont.truetype(str(ROOT/'assets/fonts/text.ttf'),1024)
+        for lang in ['sk','cz']:
+            links=html.parse(str(ROOT/lang/'index.html')).xpath('//nav[@class="primary-nav"]/a')
+            nav_width=sum(text_font.getlength(n.text_content())*12/1024 for n in links)+(len(links)-1)*length(style(['.primary-nav'],width)['gap'],width)
+            languages=2*length(style(['.languages a'],width)['min-width'],width)+length(style(['.languages'],width)['gap'],width)
+            tools=44+languages+length(style(['.nav-tools'],width)['gap'],width)
+            gap=2*length(style(['.masthead'],width)['gap'],width)
+            assert logo+nav_width+tools+gap<=width-2*gutter,f'Desktop navigation overflow at {width}px'
     menu=style(['.primary-nav'],width)
     button=style(['.menu-button'],width)
     assert (menu.get('display')=='none') == (width<=1024)

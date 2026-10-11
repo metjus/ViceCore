@@ -25,7 +25,7 @@ IMAGES={'vice-city':'coast-cinema','vice-city-navrat':'coast-cinema','leonida':'
 for lang in ['sk','cz']:
  cz=lang=='cz';other='sk' if cz else 'cz';base='/'+lang+'/'
  def tr(sk,cs):return cs if cz else sk
- labels={'news':tr('Čítareň','Čítárna'),'database':tr('Databáza','Databáze'),'theories':tr('Teórie','Teorie'),'community':tr('Moje témy','Moje témata'),'trailers':'Trailery'}
+ labels={'news':tr('Čítareň','Čítárna'),'database':tr('Databáza','Databáze'),'map':tr('Mapa mesta','Mapa města'),'theories':tr('Teórie','Teorie'),'community':tr('Moje témy','Moje témata'),'trailers':'Trailery'}
  cats={'overview':tr('Prehľad','Přehled'),'characters':'Postavy','character':'Postavy','analysis':tr('Rozbory','Rozbory'),'guide':tr('Zdroje a návody','Zdroje a návody'),'community':tr('Moje témy','Moje témata'),'location':tr('Lokácie','Lokace'),'world':tr('Svet','Svět'),'map':'Mapa','story':tr('Príbeh','Příběh')}
  docs=[d for d in index if d['lang']==lang and not d.get('feature')]
  def url(d):return '/'+d['url']
@@ -41,9 +41,16 @@ for lang in ['sk','cz']:
   status=tr('Teória','Teorie') if d['kind']=='theories' else cats.get(d['category'],labels[d['kind']])
   attrs=f'data-filter-item data-category="{H(d["category"])}" data-search="{H(d["title"]+" "+d["excerpt"])}"' if filterable else ''
   return f'<article class="portal-card" {attrs}><a class="portal-card-image" href="{url(d)}">{picture(d)}</a><div class="portal-card-copy"><div class="portal-card-meta"><span>{status}</span><span>{minutes(d)} {tr("min čítania","min čtení")}</span></div><h3><a href="{url(d)}">{H(d['title'])}</a></h3><p>{H(d['excerpt'])}</p><div class="portal-card-bottom">{save(d)}<a href="{url(d)}" aria-label="{H(d['title'])}">↗</a></div></div></article>'
- def nav(section):return ''.join(f'<a href="{base}{p}/" {"aria-current=page" if section==k else ""}>{labels[k]}</a>' for k,p in [('database','databaza'),('community','komunita'),('news','novinky'),('trailers','trailery'),('theories','teorie')])
+ def nav(section):return ''.join(f'<a href="{base}{p}/" {"aria-current=page" if section==k else ""}>{labels[k]}</a>' for k,p in [('database','databaza'),('map','mapa'),('community','komunita'),('news','novinky'),('trailers','trailery'),('theories','teorie')])
  def render(path,title,desc,main,section,extra=''):
-  p=R/path/'index.html';old=p.read_text();head=old.split('<body',1)[0]
+  p=R/path/'index.html';old=(p if p.exists() else R/lang/'databaza/index.html').read_text();head=old.split('<body',1)[0]
+  if section=='map':
+   head=re.sub(r'<meta name="description"[^>]+>',f'<meta name="description" content="{H(desc)}">',head)
+   head=re.sub(r'<meta property="og:title"[^>]+>',f'<meta property="og:title" content="{H(title)} | ViceCore">',head)
+   head=re.sub(r'<meta property="og:description"[^>]+>',f'<meta property="og:description" content="{H(desc)}">',head)
+   head=re.sub(r'<link rel="canonical"[^>]+>',f'<link rel="canonical" href="https://vicecore.matus-sturdik1.workers.dev/{lang}/mapa/">',head)
+   head=re.sub(r'<meta property="og:url"[^>]+>',f'<meta property="og:url" content="https://vicecore.matus-sturdik1.workers.dev/{lang}/mapa/">',head)
+   head=re.sub(r'(<link rel="alternate" hreflang="(?:sk|cs)" href="https://vicecore.matus-sturdik1.workers.dev/(?:sk|cz)/)[^"]*',r'\1mapa/',head)
   head=re.sub(r'<link rel="(?:stylesheet|preload)"[^>]+>','',head)
   head=re.sub(r'<title>.*?</title>',f'<title>{H(title)} | ViceCore</title>',head)
   head=re.sub(r'<meta name="theme-color"[^>]+>','<meta name="theme-color" content="#0b181b">',head)
@@ -62,7 +69,7 @@ for lang in ['sk','cz']:
 <footer class="footer shell"><div class="footer-top"><a class="footer-logo" href="{base}" aria-label="ViceCore"><img class="brand-logo" src="/assets/brand/vicecore-logo-dark.svg" alt="ViceCore" width="260" height="53"></a><div class="footer-links">{nav('')}</div><a class="back-top" href="#main">↑ {tr('Späť hore','Zpět nahoru')}</a></div><div class="footer-bottom"><span>© 2026 VICECORE</span><p>{tr('Neoficiálny fanúšikovský projekt bez spojenia s Rockstar Games. Oficiálne zábery sú označené; ostatné obrázky sú fan art.','Neoficiální fanouškovský projekt bez spojení s Rockstar Games. Oficiální záběry jsou označené; ostatní obrázky jsou fan art.')}</p><div><a href="{about}">{tr('O projekte','O projektu')}</a><a href="{privacy}">{tr('Ochrana súkromia','Ochrana soukromí')}</a></div></div></footer>
 <dialog id="search-dialog" aria-label="{tr('Hľadať','Hledat')}"><div class="search-top"><label class="sr-only" for="search-input">{tr('Hľadať','Hledat')}</label><input id="search-input" type="search" placeholder="{tr('Hľadaj postavy, miesta alebo články.','Hledej postavy, místa nebo články.')}" autocomplete="off"><button id="search-close" aria-label="{tr('Zavrieť','Zavřít')}">✕</button></div><div id="search-results" aria-live="polite"></div><div class="search-footer">CTRL / ⌘ K<span>ESC</span></div></dialog>
 <script defer src="/assets/js/search-index.js"></script><script defer src="/assets/js/editorial.js"></script><script defer src="/assets/js/home-saves.js"></script><script defer src="/assets/js/portal.js"></script></body></html>'''
-  p.write_text(head+body)
+  p.parent.mkdir(parents=True,exist_ok=True);p.write_text(head+body)
  def breadcrumb(items):return '<nav class="portal-crumbs" aria-label="'+tr('Navigácia stránky','Navigace stránky')+'"><a href="'+base+'">'+tr('Domov','Domů')+'</a>'+''.join('<span>/</span>'+ (f'<a href="{u}">{H(t)}</a>' if u else f'<span aria-current="page">{H(t)}</span>') for t,u in items)+'</nav>'
  def heading(title,desc,eye):return f'<div class="portal-heading"><p class="eyebrow">{eye}</p><h1>{H(title)}</h1><p class="portal-deck">{H(desc)}</p></div>'
  for kind,folder in SECTIONS.items():
@@ -102,6 +109,12 @@ for lang in ['sk','cz']:
  for val,text,target in [('world',tr('Svet a objavovanie','Svět a objevování'),'databaza/leonida'),('story',tr('Lucia a Jason','Lucia a Jason'),'databaza/lucia'),('vehicles',tr('Jazdenie a atmosféra','Jízda a atmosféra'),'databaza/svet-a-atmosfera'),('atmosphere',tr('Vice City','Vice City'),'databaza/vice-city')]:main+=f'<button class="poll-option" data-value="{val}" data-target="{base}{target}/" aria-pressed="false">{text}<span>↗</span></button>'
  main+=f'</div><p id="poll-note" class="personal-note" aria-live="polite">{tr("Uložené iba v tomto prehliadači.","Uloženo pouze v tomto prohlížeči.")}</p><a id="poll-explore" class="button coral" hidden>{tr("Preskúmať tému","Prozkoumat téma")} ↗</a><button id="poll-reset" class="personal-reset" hidden>{tr("Zmeniť výber","Změnit výběr")}</button></section></div><div class="portal-notice"><span>↗</span><p>{tr("Tvoja knižnica je osobná. Uložené témy zostávajú v tomto prehliadači; zdieľané účty a diskusie nie sú súčasťou tejto verzie.","Tvoje knihovna je osobní. Uložená témata zůstávají v tomto prohlížeči; sdílené účty a diskuse nejsou součástí této verze.")}</p></div>'
  render(Path(lang)/'komunita',title,desc,main,'community')
+ title=labels['map']+'.';desc=tr('Mapa mesta bude sprístupnená po vydaní GTA VI.','Mapa města bude zpřístupněna po vydání GTA VI.')
+ lock='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3M12 14v3"/></svg>'
+ w,h=Image.open(R/'assets/img/coast-cinema.webp').size
+ main=breadcrumb([(labels['map'],None)])+heading(title,tr('Vice City / Leonida','Vice City / Leonida'),'VICECORE / CITY ATLAS')
+ main+=f'''<section class="map-coming" aria-labelledby="map-status"><div class="map-coming-copy"><span class="map-lock">{lock}</span><p class="eyebrow">{tr('ZATIAĽ NEDOSTUPNÁ','ZATÍM NEDOSTUPNÁ')}</p><h2 id="map-status">{tr('Sprístupníme<br>po vydaní.','Zpřístupníme<br>po vydání.')}</h2><p class="map-coming-note">{desc}</p><a class="button coral" href="{base}databaza/?kategoria=location">{tr('Zatiaľ preskúmaj miesta','Zatím prozkoumej místa')} <span>↗</span></a></div><figure class="map-coming-visual"><img src="/assets/img/coast-cinema.webp" srcset="/assets/img/coast-cinema-960.webp 960w, /assets/img/coast-cinema.webp {w}w" sizes="(max-width:760px) 100vw, 50vw" alt="{tr('Ilustrácia pobrežia Vice City','Ilustrace pobřeží Vice City')}" width="{w}" height="{h}"><figcaption>VICE CITY / FAN ART</figcaption></figure></section>'''
+ render(Path(lang)/'mapa',title,desc,main,'map','map-page')
  for slug in [('o-projektu' if cz else 'o-projekte'),('ochrana-soukromi' if cz else 'ochrana-sukromia')]:
   path=Path(lang)/slug;key=path.as_posix()+'/';body=content[key]
   if 'o-proj' in slug:
@@ -109,4 +122,4 @@ for lang in ['sk','cz']:
   title=tr('O projekte','O projektu') if 'o-proj' in slug else tr('Ochrana súkromia','Ochrana soukromí')
   main=breadcrumb([(title,None)])+heading(title,'','VICECORE')+'<article class="doc-body portal-legal">'+body+'</article>'
   render(path,title,'',main,'legal')
-print('Rendered 50 retained portal pages using shared navigation, article templates and local interactions.')
+print('Rendered 50 retained portal pages and 2 map availability pages using shared navigation.')
