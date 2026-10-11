@@ -1,8 +1,8 @@
 # ViceCore
 
-Statický fanúšikovský portál GTA VI v slovenčine a češtine. Má 56 HTML stránok vrátane vstupu a 404, databázu, články a rozbor ôsmich záberov Traileru 1. Uložené články a voľba témy používajú iba lokálne úložisko prehliadača.
+Statický fanúšikovský portál GTA VI v slovenčine a češtine. Má 56 HTML stránok vrátane vstupu a 404, databázu, články a rozbor ôsmich záberov Traileru 1. Uložené profily, miesta, články a voľba témy používajú iba lokálne úložisko prehliadača. Homepage je rozcestník databázy, nezávislý od dátumu vydania. Formulár v úvode smeruje do databázy pomocou `?q=`; kategórie používajú `?kategoria=`.
 
-Dizajn používa koralovú, pieskovú a tmavú petrolejovú farbu. Logo je SVG, favicon používa monogram VC a fonty sú uložené lokálne. Úvodný nadpis a rozcestník sú v spoločnej mriežke; mobilné menu sa používa do 1024 px. Sekcie rastú podľa obsahu a respektujú znížený pohyb. Tmavé pozadie je nastavené priamo v HTML pred načítaním CSS.
+Dizajn používa koralovú, pieskovú a tmavú petrolejovú farbu. Logo je SVG, favicon používa monogram VC a fonty sú uložené lokálne. Úvodný nadpis a desktopový rozcestník sú v spoločnej mriežke; mobilné menu sa používa do 1024 px. Sekcie rastú podľa obsahu a respektujú znížený pohyb. Tmavé pozadie je nastavené priamo v HTML pred načítaním CSS.
 
 ## Build a kontrola
 

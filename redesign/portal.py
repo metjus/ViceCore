@@ -25,8 +25,8 @@ IMAGES={'vice-city':'coast-cinema','vice-city-navrat':'coast-cinema','leonida':'
 for lang in ['sk','cz']:
  cz=lang=='cz';other='sk' if cz else 'cz';base='/'+lang+'/'
  def tr(sk,cs):return cs if cz else sk
- labels={'news':'Novinky','database':tr('Databáza','Databáze'),'theories':tr('Teórie','Teorie'),'community':'Komunita','trailers':'Trailery'}
- cats={'overview':tr('Prehľad','Přehled'),'characters':'Postavy','character':'Postavy','analysis':tr('Rozbory','Rozbory'),'guide':tr('Zdroje a návody','Zdroje a návody'),'community':'Komunita','location':tr('Lokácie','Lokace'),'world':tr('Svet','Svět'),'map':'Mapa','story':tr('Príbeh','Příběh')}
+ labels={'news':tr('Čítareň','Čítárna'),'database':tr('Databáza','Databáze'),'theories':tr('Teórie','Teorie'),'community':tr('Moje témy','Moje témata'),'trailers':'Trailery'}
+ cats={'overview':tr('Prehľad','Přehled'),'characters':'Postavy','character':'Postavy','analysis':tr('Rozbory','Rozbory'),'guide':tr('Zdroje a návody','Zdroje a návody'),'community':tr('Moje témy','Moje témata'),'location':tr('Lokácie','Lokace'),'world':tr('Svet','Svět'),'map':'Mapa','story':tr('Príbeh','Příběh')}
  docs=[d for d in index if d['lang']==lang and not d.get('feature')]
  def url(d):return '/'+d['url']
  def minutes(d):
@@ -41,7 +41,7 @@ for lang in ['sk','cz']:
   status=tr('Teória','Teorie') if d['kind']=='theories' else cats.get(d['category'],labels[d['kind']])
   attrs=f'data-filter-item data-category="{H(d["category"])}" data-search="{H(d["title"]+" "+d["excerpt"])}"' if filterable else ''
   return f'<article class="portal-card" {attrs}><a class="portal-card-image" href="{url(d)}">{picture(d)}</a><div class="portal-card-copy"><div class="portal-card-meta"><span>{status}</span><span>{minutes(d)} {tr("min čítania","min čtení")}</span></div><h3><a href="{url(d)}">{H(d['title'])}</a></h3><p>{H(d['excerpt'])}</p><div class="portal-card-bottom">{save(d)}<a href="{url(d)}" aria-label="{H(d['title'])}">↗</a></div></div></article>'
- def nav(section):return ''.join(f'<a href="{base}{p}/" {"aria-current=page" if section==k else ""}>{labels[k]}</a>' for k,p in [('news','novinky'),('database','databaza'),('theories','teorie'),('community','komunita'),('trailers','trailery')])
+ def nav(section):return ''.join(f'<a href="{base}{p}/" {"aria-current=page" if section==k else ""}>{labels[k]}</a>' for k,p in [('database','databaza'),('community','komunita'),('news','novinky'),('trailers','trailery'),('theories','teorie')])
  def render(path,title,desc,main,section,extra=''):
   p=R/path/'index.html';old=p.read_text();head=old.split('<body',1)[0]
   head=re.sub(r'<link rel="(?:stylesheet|preload)"[^>]+>','',head)
@@ -74,7 +74,7 @@ for lang in ['sk','cz']:
   tools=f'<div class="portal-toolbar">{filters}<label class="portal-local-search"><span class="sr-only">{tr("Hľadať v témach","Hledat v tématech")}</span><input id="listing-query" type="search" placeholder="{tr("Nájdi tému…","Najdi téma…")}"></label></div><p id="listing-count" class="listing-count" aria-live="polite">{len(selected)} {tr("tém","témat")}</p>'
   main=breadcrumb([(labels[kind],None)])+heading(title,desc,labels[kind]+' / VICECORE')
   if kind=='theories':main+=f'<div class="portal-notice"><span>?</span><p>{tr("Tieto texty skúmajú možnosti. Potvrdené východiská a naše domnienky sú v texte oddelené.","Tyto texty zkoumají možnosti. Potvrzená východiska a naše domněnky jsou v textu oddělené.")}</p><a href="{base}databaza/rozpoznavanie-teorii/">{tr("Ako čítať teórie","Jak číst teorie")} ↗</a></div>'
-  main+=tools+'<div class="portal-grid">'+''.join(card(d,True) for d in selected)+'</div>'+f'<div id="listing-empty" class="portal-empty" hidden><h2>{tr("Žiadna stopa.","Žádná stopa.")}</h2><p>{tr("Skús iné slovo alebo zobraz všetky témy.","Zkus jiné slovo nebo zobraz všechna témata.")}</p><button id="listing-reset" class="button ghost">{tr("Zrušiť filtre","Zrušit filtry")}</button></div>'
+  main+=tools+f'<noscript><p class="listing-count">{tr("Vyhľadávanie a filtre vyžadujú JavaScript. Všetky témy nájdeš v zozname nižšie.","Vyhledávání a filtry vyžadují JavaScript. Všechna témata najdeš v seznamu níže.")}</p></noscript>'+'<div class="portal-grid">'+''.join(card(d,True) for d in selected)+'</div>'+f'<div id="listing-empty" class="portal-empty" hidden><h2>{tr("Žiadna stopa.","Žádná stopa.")}</h2><p>{tr("Skús iné slovo alebo zobraz všetky témy.","Zkus jiné slovo nebo zobraz všechna témata.")}</p><button id="listing-reset" class="button ghost">{tr("Zrušiť filtre","Zrušit filtry")}</button></div>'
   render(Path(lang)/folder,title,desc,main,kind)
  for d in docs:
   body=content[d['url']];toc=[]
@@ -82,8 +82,9 @@ for lang in ['sk','cz']:
    n=len(toc)+1;text=html.unescape(re.sub('<[^>]+>','',m.group(1)));toc.append((f'chapter-{n}',text));return f'<h2 id="chapter-{n}">{m.group(1)}</h2>'
   body=re.sub(r'<h2[^>]*>(.*?)</h2>',add_heading,body,flags=re.S)
   related=[next(x for x in docs if x['slug']==slug) for slug in RELATED.get(d['slug'],[]) if any(x['slug']==slug for x in docs)]
+  if d['kind']=='database':related=[x for x in related if x['kind']=='database']
   if len(related)<3:
-   candidates=sorted((x for x in docs if x['slug']!=d['slug'] and x not in related),key=lambda x:(x['category']!=d['category'],x['kind']==d['kind']))
+   candidates=sorted((x for x in docs if x['slug']!=d['slug'] and x not in related),key=lambda x:(x['kind']!=d['kind'],x['category']!=d['category']))
    related=(related+candidates)[:3]
   note=tr('FANÚŠIKOVSKÁ TEÓRIA','FANOUŠKOVSKÁ TEORIE') if d['kind']=='theories' else tr('PROFIL','PROFIL') if d['kind']=='database' else tr('REDAKČNÝ ROZBOR','REDAKČNÍ ROZBOR')
   source='ROCKSTAR GAMES' if IMAGES.get(d['slug'])=='rockstar-lucia-jason' else 'VICECORE / FAN ART'
@@ -95,11 +96,11 @@ for lang in ['sk','cz']:
   main+=f'<div class="portal-reading"><article class="doc-body">{body}<div class="article-actions">{save(d)}<button class="share-link button ghost" type="button">{tr("Skopírovať odkaz","Zkopírovat odkaz")} ↗</button></div></article><aside class="portal-aside">{sidebar}</aside></div><section class="portal-related"><div class="section-heading"><div><p class="eyebrow">{tr("POKRAČUJ PO STOPE","POKRAČUJ PO STOPĚ")}</p><h2>{tr("Čo ďalej?","Co dál?")}</h2></div></div><div class="portal-grid">'+''.join(card(x) for x in related)+'</div></section>'
   render(Path(d['url'].rstrip('/')),d['title'],d['excerpt'],main,d['kind'],'article-page')
  # Personal area: existing local poll + existing language-neutral saved IDs.
- title=tr('Tvoje stopy.','Tvoje stopy.');desc=tr('Uložené články a tvoj výber tém. Bez registrácie.','Uložené články a tvůj výběr témat. Bez registrace.')
- main=breadcrumb([('Komunita',None)])+heading(title,desc,'KOMUNITA / VICECORE')
- main+=f'<div class="personal-grid"><section class="personal-panel"><p class="eyebrow">{tr("NA NESKÔR","NA POZDĚJI")}</p><h2>{tr("Uložené články","Uložené články")}</h2><p>{tr("Výber zostáva v tomto prehliadači a funguje aj po prepnutí jazyka.","Výběr zůstává v tomto prohlížeči a funguje i po přepnutí jazyka.")}</p><div id="saved-list" class="portal-saved" aria-live="polite"><p>{tr("Na zobrazenie uložených článkov zapni JavaScript.","Pro zobrazení uložených článků zapni JavaScript.")}</p></div></section><section class="personal-panel"><p class="eyebrow">{tr("TVOJ VÝBER","TVŮJ VÝBĚR")}</p><h2>{tr("Čo ťa láka?","Co tě láká?")}</h2><p>{tr("Vyber si tému, ktorú chceš preskúmať. Voľba je iba tvoja; nejde o verejnú anketu.","Vyber si téma, které chceš prozkoumat. Volba je jen tvoje; nejde o veřejnou anketu.")}</p><div class="portal-poll">'
- for val,text,target in [('world',tr('Svet a objavovanie','Svět a objevování'),'databaza/leonida'),('story',tr('Lucia a Jason','Lucia a Jason'),'novinky/lucia-a-jason'),('vehicles',tr('Jazdenie a atmosféra','Jízda a atmosféra'),'databaza/svet-a-atmosfera'),('atmosphere',tr('Vice City','Vice City'),'databaza/vice-city')]:main+=f'<button class="poll-option" data-value="{val}" data-target="{base}{target}/" aria-pressed="false">{text}<span>↗</span></button>'
- main+=f'</div><p id="poll-note" class="personal-note" aria-live="polite">{tr("Uložené iba v tomto prehliadači.","Uloženo pouze v tomto prohlížeči.")}</p><a id="poll-explore" class="button coral" hidden>{tr("Preskúmať tému","Prozkoumat téma")} ↗</a><button id="poll-reset" class="personal-reset" hidden>{tr("Zmeniť výber","Změnit výběr")}</button></section></div><div class="portal-notice"><span>↗</span><p>{tr("Verejné diskusie zatiaľ nie sú spustené. Táto sekcia teraz slúži na tvoj osobný výber.","Veřejné diskuse zatím nejsou spuštěné. Tato sekce nyní slouží pro tvůj osobní výběr.")}</p></div>'
+ title=tr('Tvoja knižnica.','Tvoje knihovna.');desc=tr('Uložené profily, miesta a články. Tvoj výber bez registrácie.','Uložené profily, místa a články. Tvůj výběr bez registrace.')
+ main=breadcrumb([(labels['community'],None)])+heading(title,desc,tr('MOJE TÉMY','MOJE TÉMATA')+' / VICECORE')
+ main+=f'<div class="personal-grid"><section class="personal-panel"><p class="eyebrow">{tr("NA NESKÔR","NA POZDĚJI")}</p><h2>{tr("Uložené témy","Uložená témata")}</h2><p>{tr("Výber zostáva v tomto prehliadači a funguje aj po prepnutí jazyka.","Výběr zůstává v tomto prohlížeči a funguje i po přepnutí jazyka.")}</p><div id="saved-list" class="portal-saved" aria-live="polite"><p>{tr("Na zobrazenie uložených tém zapni JavaScript.","Pro zobrazení uložených témat zapni JavaScript.")}</p></div></section><section class="personal-panel"><p class="eyebrow">{tr("TVOJ VÝBER","TVŮJ VÝBĚR")}</p><h2>{tr("Čo ťa láka?","Co tě láká?")}</h2><p>{tr("Vyber si tému, ktorú chceš preskúmať. Voľba je iba tvoja; nejde o verejnú anketu.","Vyber si téma, které chceš prozkoumat. Volba je jen tvoje; nejde o veřejnou anketu.")}</p><div class="portal-poll">'
+ for val,text,target in [('world',tr('Svet a objavovanie','Svět a objevování'),'databaza/leonida'),('story',tr('Lucia a Jason','Lucia a Jason'),'databaza/lucia'),('vehicles',tr('Jazdenie a atmosféra','Jízda a atmosféra'),'databaza/svet-a-atmosfera'),('atmosphere',tr('Vice City','Vice City'),'databaza/vice-city')]:main+=f'<button class="poll-option" data-value="{val}" data-target="{base}{target}/" aria-pressed="false">{text}<span>↗</span></button>'
+ main+=f'</div><p id="poll-note" class="personal-note" aria-live="polite">{tr("Uložené iba v tomto prehliadači.","Uloženo pouze v tomto prohlížeči.")}</p><a id="poll-explore" class="button coral" hidden>{tr("Preskúmať tému","Prozkoumat téma")} ↗</a><button id="poll-reset" class="personal-reset" hidden>{tr("Zmeniť výber","Změnit výběr")}</button></section></div><div class="portal-notice"><span>↗</span><p>{tr("Tvoja knižnica je osobná. Uložené témy zostávajú v tomto prehliadači; zdieľané účty a diskusie nie sú súčasťou tejto verzie.","Tvoje knihovna je osobní. Uložená témata zůstávají v tomto prohlížeči; sdílené účty a diskuse nejsou součástí této verze.")}</p></div>'
  render(Path(lang)/'komunita',title,desc,main,'community')
  for slug in [('o-projektu' if cz else 'o-projekte'),('ochrana-soukromi' if cz else 'ochrana-sukromia')]:
   path=Path(lang)/slug;key=path.as_posix()+'/';body=content[key]

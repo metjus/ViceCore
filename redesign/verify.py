@@ -26,6 +26,14 @@ for p in R.rglob('*.html'):
 for lang in ['sk','cz']:
  parser=Tags();parser.feed((R/lang/'index.html').read_text());tags=parser.tags
  assert sum(n=='h1' for n,t in tags)==1
+ assert any(n=='form' and t.get('role')=='search' and t.get('action')==f'/{lang}/databaza/' and t.get('method')=='get' for n,t in tags)
+ assert any(n=='input' and t.get('name')=='q' for n,t in tags)
+ assert any(n=='a' and t.get('href')==f'/{lang}/databaza/?kategoria=character' for n,t in tags)
+ assert any(n=='a' and t.get('href')==f'/{lang}/databaza/?kategoria=location' for n,t in tags)
+ assert not any(t.get('id')=='questions' or 'dispatch' in t.get('class','').split() for n,t in tags)
+ home=(R/lang/'index.html').read_text()
+ assert '19. 11. 2026' not in home and 'Zatiaľ bez odpovede' not in home and 'Zatím bez odpovědi' not in home
+ assert all(t['data-save-id'].startswith('database:') for n,t in tags if 'data-save-id' in t)
  assert sum('category' in t.get('class','').split() for n,t in tags)==5
  assert sum('dossier' in t.get('class','').split() for n,t in tags)==5
  assert sum('story' in t.get('class','').split() for n,t in tags)==3
