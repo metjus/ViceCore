@@ -11,13 +11,19 @@
   const cs = document.body.dataset.lang === 'cz';
   const tr = (sk, cz) => cs ? cz : sk;
   let selected = 0, pending = null, connected = false;
-  function select(index) {
+  function select(index, navigate = false) {
     selected = Math.max(0, Math.min(panels.length - 1, index));
     panels.forEach((panel, i) => { panel.hidden = i !== selected; });
     links.forEach((link, i) => { if (i === selected) link.setAttribute('aria-current', 'true'); else link.removeAttribute('aria-current'); });
     prev.disabled = selected === 0;
     next.disabled = selected === panels.length - 1;
     document.getElementById('shot-position').textContent = `${String(selected + 1).padStart(2, '0')} / ${String(panels.length).padStart(2, '0')}`;
+    if (navigate) {
+      history.replaceState(null, '', `#${panels[selected].id}`);
+      panels[selected].setAttribute('tabindex', '-1');
+      panels[selected].focus({ preventScroll: true });
+      panels[selected].scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
+    }
   }
   function resume() {
     if (pending === null || video.readyState < 1) return;
@@ -33,9 +39,9 @@
     if (!connected) { connected = true; video.src = video.dataset.src; video.load(); }
     resume();
   }
-  links.forEach((link, i) => link.addEventListener('click', event => { event.preventDefault(); select(i); }));
-  prev.addEventListener('click', () => select(selected - 1));
-  next.addEventListener('click', () => select(selected + 1));
+  links.forEach((link, i) => link.addEventListener('click', event => { event.preventDefault(); select(i, true); }));
+  prev.addEventListener('click', () => select(selected - 1, true));
+  next.addEventListener('click', () => select(selected + 1, true));
   document.getElementById('video-start').addEventListener('click', () => play(0));
   document.querySelectorAll('.play-moment').forEach(link => link.addEventListener('click', event => {
     event.preventDefault(); play(Number(link.dataset.seek));
@@ -51,4 +57,8 @@
   document.body.classList.add('screening-ready');
   const hashIndex = panels.findIndex(panel => `#${panel.id}` === location.hash);
   select(hashIndex < 0 ? 0 : hashIndex);
+  addEventListener('hashchange', () => {
+    const index = panels.findIndex(panel => `#${panel.id}` === location.hash);
+    if (index >= 0) select(index);
+  });
 })();
