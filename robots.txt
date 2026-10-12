@@ -1,3 +1,3 @@
 User-agent: *
 Allow: /
-Sitemap: https://vicecore.sk/sitemap.xml
+Sitemap: https://vicecore.matus-sturdik1.workers.dev/sitemap.xml

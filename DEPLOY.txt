@@ -1,18 +1,10 @@
-VICECORE — PREMIUM EDITION 2026
+VICECORE — BETA 01
 
-NASADENIE
-1. Rozbaľ ZIP a nahraj celý jeho obsah do koreňa hostingu (public_html/www/htdocs).
-2. Zachovaj priečinky sk, cz a assets vrátane assets/img a assets/css.
-3. Otvor doménu. Koreňový index.html odkazuje na sk/index.html; CZ je cz/index.html.
-4. Obnov cache prehliadača Ctrl+Shift+R.
-5. Lokálny náhľad bez servera: dvojklik na index.html.
+1. Spusti python build.py (závislosti: Pillow a lxml).
+2. Nasadzuj obsah priečinka dist, nie zdrojový projekt.
+3. Cloudflare Workers Static Assets používa wrangler.jsonc s assets.directory ./dist.
+4. Úvod je /sk/, česká verzia /cz/. Interné cesty vyžadujú HTTP hosting; dvojklik zo súborového systému nie je podporovaný.
+5. Stránka 404 používa absolútne cesty a funguje aj pri neexistujúcej vnorenenej adrese.
 
-TECHNOLÓGIE
-Static HTML + CSS + JavaScript. Žiadna databáza ani Node na hostingu.
-Interakcie galérie a scroll animácie sú v assets/js/premium.js.
-Všetky obrázky sú lokálne. Výnimkou sú voliteľné webové fonty Google Fonts;
-pri offline režime sa automaticky použijú systémové alternatívy.
-
-POZOR
-Obsah článkov, zdroje a právne údaje si pred verejným spustením skontroluj.
-Redakčná administrácia, verejné komentáre a účty ešte nie sú implementované.
+Fonty a ilustrácie sú lokálne. Video Rockstar sa načíta až na kliknutie.
+Postup úprav a všetky kontroly sú v README.md.
