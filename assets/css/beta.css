@@ -1,0 +1,46 @@
+/* Shared finishing styles for profiles, personal library and beta help. */
+.beta-link{color:var(--aqua);border-bottom:1px solid #78c8b655}
+.profile-facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 30px;margin:24px 0;border-top:1px solid var(--line)}
+.profile-facts>div{padding:20px 0;border-bottom:1px solid var(--line);min-width:0}
+.profile-facts dt{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--aqua)}
+.profile-facts dd{margin:8px 0 0;font-size:16px;line-height:1.6;color:var(--paper)}
+.profile-source{margin-top:36px;padding:22px 24px;background:#10282c;border-left:2px solid var(--aqua)}
+.profile-source>span{display:block;font-size:10px;letter-spacing:.08em;color:var(--muted)}
+.profile-source>a{display:inline-block;margin-top:8px;font-size:13px}
+.source-directory{display:grid;gap:0;margin:24px 0;border-top:1px solid var(--line)}
+.source-directory>a{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 24px;padding:22px 0;border-bottom:1px solid var(--line);text-decoration:none}
+.source-directory strong{font-size:17px}.source-directory span{font-size:12px;color:var(--muted)}
+.library-tools{display:flex;flex-wrap:wrap;gap:10px;margin:24px 0;padding:20px 0;border-block:1px solid var(--line)}
+.library-tools .button{font-size:11px;padding-inline:15px;min-height:44px;gap:12px}
+.button:disabled,.library-clear:disabled{opacity:.4;cursor:default;transform:none}
+.library-clear{border:0;background:none;color:var(--muted);font-size:11px;min-height:44px;padding:12px}
+.library-clear:hover:not(:disabled){color:var(--coral)}
+#library-status{flex-basis:100%;font-size:11px;line-height:1.8;color:var(--muted);max-width:520px;margin:4px 0 0}
+.beta-features{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px}
+.beta-features>a{display:block;position:relative;min-width:0;padding:30px 34px;background:#10282c;border:1px solid var(--line)}
+.beta-features h2{font-size:clamp(32px,3.7vw,52px);margin-top:16px;padding-right:30px}
+.beta-features p{font-size:14px;line-height:1.8;color:var(--muted);max-width:400px;margin-top:16px}
+.beta-features b{position:absolute;right:30px;top:30px;color:var(--coral);font-weight:400;font-size:22px}
+.beta-features>a:hover{border-color:#78c8b666}.beta-features>a:hover h2{color:var(--aqua)}
+.beta-bottom{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(32px,6vw,90px);padding-top:70px}
+.beta-bottom h2{font-size:clamp(36px,4.5vw,64px);margin-top:20px;line-height:1.1}
+.beta-notes>p:not(.eyebrow){font-size:14px;line-height:1.9;color:var(--muted);margin-top:22px;max-width:450px}
+.beta-notes .text-link{margin-top:25px}
+.beta-feedback form{display:grid;gap:10px;margin-top:28px}
+.beta-feedback label{font-size:13px;line-height:1.6;color:var(--paper)}
+.beta-feedback input,.beta-feedback textarea{width:100%;min-width:0;background:#10282c;border:1px solid #ffffff44;border-radius:0;color:var(--paper);font-family:var(--text);font-size:16px;line-height:1.6;padding:13px 15px;min-height:48px}
+.beta-feedback input::placeholder,.beta-feedback textarea::placeholder{color:var(--muted);opacity:1}
+.beta-feedback textarea{resize:vertical;margin-bottom:8px}.beta-feedback input{margin-bottom:10px}
+.beta-feedback .button{justify-self:start;font-size:12px;max-width:100%;gap:14px}
+.feedback-note{font-size:11px;line-height:1.8;color:var(--muted);margin-top:7px}
+.error-page{min-height:100svh;background:linear-gradient(90deg,#0b181bf5,#0b181bd9),url('/assets/img/night-drive.webp') center/cover}
+.error-header{display:flex;align-items:center;justify-content:space-between;gap:20px;padding-block:26px;border-bottom:1px solid var(--line)}
+.error-header img{width:205px;height:42px;object-fit:contain}
+.error-main{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:center;gap:50px;min-height:calc(100svh - 100px);padding-block:80px}
+.error-main h1{font-family:var(--display);font-weight:800;font-size:clamp(130px,23vw,340px);line-height:1;color:var(--paper);margin:0}
+.error-main h1>span{color:var(--coral)}.error-main h2{font-size:clamp(36px,4.5vw,64px);line-height:1.1;margin-top:20px}
+.error-main section>p:not(.eyebrow){font-size:15px;line-height:1.8;color:var(--muted);max-width:420px;margin-top:24px}
+.error-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:30px}
+@media(max-width:760px){.profile-facts{grid-template-columns:minmax(0,1fr)}.profile-source{padding:20px}.beta-features{grid-template-columns:minmax(0,1fr);gap:16px}.beta-features>a{padding:26px 24px}.beta-features b{right:24px;top:26px}.beta-bottom{grid-template-columns:minmax(0,1fr);gap:44px;padding-top:48px}.beta-features h2{font-size:38px}.beta-bottom h2{font-size:clamp(34px,8vw,50px)}.error-header{padding-block:20px}.error-header img{width:160px;height:33px}.error-main{grid-template-columns:minmax(0,1fr);gap:30px;min-height:0;padding-block:52px 70px}.error-main h1{font-size:clamp(130px,34vw,240px)}.error-main h2{font-size:clamp(34px,8vw,54px)}.error-main section>p:not(.eyebrow){font-size:14px}}
+
+.scene-directory{display:grid;gap:16px;margin:26px 0}.scene-directory>a{display:grid;grid-template-columns:128px minmax(0,1fr) auto;align-items:center;gap:18px;padding:16px 0;border-block:1px solid var(--line);text-decoration:none}.scene-directory img{aspect-ratio:16/9;object-fit:cover}.scene-directory strong{display:block;font-size:17px}.scene-directory small{display:block;font-size:9px;line-height:1.8;color:var(--muted);margin-top:6px}.scene-directory b{color:var(--coral);font-weight:400}@media(max-width:760px){.scene-directory>a{grid-template-columns:88px minmax(0,1fr);gap:14px}.scene-directory b{display:none}.scene-directory strong{font-size:15px}}

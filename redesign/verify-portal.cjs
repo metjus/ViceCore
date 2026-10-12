@@ -10,13 +10,17 @@ for(const lang of ['sk','cz'])for(const initialQuery of ['', '?q=L%C3%BAcia', '?
  const filters=[new El({filter:'all'}),new El({filter:'character'}),new El({filter:'location'})];
  const options=[new El({value:'world',target:`/${lang}/databaza/leonida/`}),new El({value:'story',target:`/${lang}/novinky/lucia-a-jason/`})];
  const nodes=Object.fromEntries(['#listing-query','#listing-count','#listing-empty','#listing-reset','#saved-list','#poll-explore','#poll-reset','#poll-note'].map(k=>[k,new El()]));
- const ctx={URLSearchParams,location:{search:initialQuery},window:{VICECORE_STORE:{get(k,f){return data[k]??f},set(k,v){data[k]=v;return true}},VICECORE_REFRESH_SAVES(){refresh++}},document:{body:{dataset:{lang}},querySelector(s){return nodes[s]||null},querySelectorAll(s){return s==='[data-filter-item]'?cards:s==='.filter-btn'?filters:s==='.poll-option'?options:[]},createElement(){return new El()}},addEventListener(){}};
+ const location=new URL('https://vicecore.test/'+lang+'/databaza/'+initialQuery),globalEvents={},languageLinks=[Object.assign(new El(),{href:'/sk/databaza/'}),Object.assign(new El(),{href:'/cz/databaza/'})];
+ const history={pushState(state,title,url){location.href=new URL(url,location.href).href},replaceState(state,title,url){location.href=new URL(url,location.href).href}};
+ const ctx={URLSearchParams,URL,location,history,window:{VICECORE_STORE:{get(k,f){return data[k]??f},set(k,v){data[k]=v;return true}},VICECORE_REFRESH_SAVES(){refresh++}},document:{body:{dataset:{lang}},querySelector(s){return nodes[s]||null},querySelectorAll(s){return s==='.languages a'?languageLinks:s==='[data-filter-item]'?cards:s==='.filter-btn'?filters:s==='.poll-option'?options:[]},createElement(){return new El()}},addEventListener(event,fn){globalEvents[event]=fn}};
  vm.createContext(ctx);vm.runInContext(fs.readFileSync('assets/js/search-index.js','utf8'),ctx);vm.runInContext(fs.readFileSync('assets/js/portal.js','utf8'),ctx);
  const initialExpected=initialQuery.includes('L%C3%BAcia')?[false,true,true]:initialQuery.includes('=location')?[true,false,false]:initialQuery.includes('LEONIDA')?[true,true,false]:[false,false,false];
  assert.deepEqual(cards.map(c=>c.hidden),initialExpected);nodes['#listing-reset'].emit('click');filters[1].emit('click');assert.deepEqual(cards.map(c=>c.hidden),[false,true,true]);
  nodes['#listing-query'].value='Vice';nodes['#listing-query'].emit('input');assert.ok(cards.every(c=>c.hidden));assert.equal(nodes['#listing-empty'].hidden,false);
  nodes['#listing-reset'].emit('click');assert.ok(cards.every(c=>!c.hidden));assert.equal(nodes['#listing-query'].value,'');
  nodes['#listing-query'].value='Lúcia';nodes['#listing-query'].emit('input');assert.deepEqual(cards.map(c=>c.hidden),[false,true,true]);
+ assert.equal(location.search,'?q=L%C3%BAcia');assert.ok(languageLinks.every(a=>a.href.includes('?q=L%C3%BAcia')));
+ location.href='https://vicecore.test/'+lang+'/databaza/?kategoria=location';globalEvents.popstate();assert.deepEqual(cards.map(c=>c.hidden),[true,false,false]);assert.ok(languageLinks.every(a=>a.href.includes('kategoria=location')));
  const saved=nodes['#saved-list'];assert.equal(saved.children.length,2);assert.ok(saved.children.every(r=>r.children[0].href.startsWith('/'+lang+'/')));
  saved.children[0].children[1].emit('click');assert.equal(saved.children.length,1);assert.equal(data['vicecore-bookmarks-v1'].length,1);assert.equal(refresh,1);
  saved.children[0].children[1].emit('click');assert.equal(data['vicecore-bookmarks-v1'].length,0);assert.equal(saved.children[0].className,'saved-empty');assert.equal(saved.children[0].children[1].href,`/${lang}/databaza/`);

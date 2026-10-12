@@ -8,9 +8,12 @@ R=Path(__file__).resolve().parents[1]/'dist'
 class Tags(HTMLParser):
  def __init__(self):super().__init__();self.tags=[]
  def handle_starttag(self,name,attrs):self.tags.append((name,dict(attrs)))
-broken=[];wrong=[];count=0
+broken=[];wrong=[];count=0;pages={}
 for p in R.rglob('*.html'):
  parser=Tags();parser.feed(p.read_text());count+=1
+ pages[p.resolve()]=parser.tags
+ ids=[t['id'] for n,t in parser.tags if 'id' in t];assert len(ids)==len(set(ids)),p
+ assert sum(n=='h1' for n,t in parser.tags)==1,p
  for name,tag in parser.tags:
   for attr in ['href','src']:
    val=tag.get(attr,'');u=urlsplit(val)
@@ -23,6 +26,14 @@ for p in R.rglob('*.html'):
    src,desc=item.strip().split();dest=(R/src.lstrip('/')) if src.startswith('/') else (p.parent/src).resolve()
    if not dest.exists():broken.append((str(p.relative_to(R)),src));continue
    if desc.endswith('w') and int(desc[:-1])!=Image.open(dest).width:wrong.append((src,desc))
+for p,tags in pages.items():
+ for name,tag in tags:
+  if name!='a':continue
+  u=urlsplit(tag.get('href',''))
+  if u.scheme or u.netloc or not u.fragment:continue
+  dest=((R/u.path.lstrip('/')).resolve() if u.path.startswith('/') else (p.parent/unquote(u.path)).resolve()) if u.path else p
+  if dest.is_dir():dest=dest/'index.html'
+  if dest in pages and not any(t.get('id')==unquote(u.fragment) for n,t in pages[dest]):broken.append((str(p.relative_to(R)),tag['href']))
 for lang in ['sk','cz']:
  parser=Tags();parser.feed((R/lang/'index.html').read_text());tags=parser.tags
  assert sum(n=='h1' for n,t in tags)==1
@@ -40,11 +51,15 @@ for lang in ['sk','cz']:
  assert ('Mapa města bude zpřístupněna po vydání GTA VI.' if lang=='cz' else 'Mapa mesta bude sprístupnená po vydaní GTA VI.') in map_page
  assert f'href="/{"sk" if lang=="cz" else "cz"}/mapa/"' in map_page
  assert f'rel="canonical" href="https://vicecore.matus-sturdik1.workers.dev/{lang}/mapa/"' in map_page
+ beta=(R/lang/'beta/index.html').read_text()
+ assert 'https://github.com/metjus/ViceCore/issues/new' in beta
+ assert f'href="/{lang}/beta/"' in home
+ assert 'data-library-tools' in (R/lang/'komunita/index.html').read_text()
  assert all(t['data-save-id'].startswith('database:') for n,t in tags if 'data-save-id' in t)
  assert sum('category' in t.get('class','').split() for n,t in tags)==5
  assert sum('dossier' in t.get('class','').split() for n,t in tags)==5
  assert sum('story' in t.get('class','').split() for n,t in tags)==3
- assert sum(n=='link' and t.get('rel')=='stylesheet' for n,t in tags)==1
+ assert sum(n=='link' and t.get('rel')=='stylesheet' for n,t in tags)==2
  ids=[t['id'] for n,t in tags if 'id' in t];assert len(ids)==len(set(ids))
  assert not any('built-in method' in p.read_text() for p in (R/lang).rglob('*.html'))
  assert any(n=='link' and t.get('hreflang')=='cs' for n,t in tags)

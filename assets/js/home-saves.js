@@ -3,9 +3,10 @@
  'use strict';
  const memory=new Map();
  window.VICECORE_STORE={
-  get(key,fallback){try{const raw=localStorage.getItem(key);if(raw===null)return memory.has(key)?memory.get(key):fallback;const value=JSON.parse(raw);return value??fallback;}catch{return memory.has(key)?memory.get(key):fallback;}},
+  get(key,fallback){if(memory.has(key))return memory.get(key)??fallback;try{const raw=localStorage.getItem(key);if(raw===null)return fallback;return JSON.parse(raw)??fallback;}catch{return fallback;}},
   set(key,value){memory.set(key,value);try{localStorage.setItem(key,JSON.stringify(value));return true;}catch{return false;}}
  };
+ addEventListener('storage',event=>{if(event.key)memory.delete(event.key);else memory.clear();});
  const store=window.VICECORE_STORE;
  const buttons=Array.from(document.querySelectorAll('[data-save-id]'));
  const cz=document.body.dataset.lang==='cz',key='vicecore-bookmarks-v1';

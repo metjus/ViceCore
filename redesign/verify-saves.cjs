@@ -12,3 +12,14 @@ for(const cz of [false,true])for(const blocked of [false,true]){
  if(!blocked)assert.deepEqual(JSON.parse(data['vicecore-bookmarks-v1']),[]);
 }
 console.log('Passed: localized save/remove, shared article IDs and blocked-storage fallback.');
+// Quota errors can block writes while reads continue returning an older saved list.
+{
+ const globalEvents={},buttonEvents={},data={'vicecore-bookmarks-v1':'["database:lucia"]'},label={},icon={};
+ const button={dataset:{saveId:'news:lucia-a-jason'},attrs:{},setAttribute(k,v){this.attrs[k]=v},querySelector:s=>s==='.save-label'?label:icon,addEventListener(k,fn){buttonEvents[k]=fn}};
+ const toast={setAttribute(){},hidden:false};
+ const context={window:{},document:{body:{dataset:{lang:'sk'},append(){}},querySelectorAll:()=>[button],querySelector:()=>toast,createElement:()=>toast},localStorage:{getItem:k=>data[k]??null,setItem(){throw Error('QuotaExceededError')}},addEventListener(k,fn){(globalEvents[k]??=[]).push(fn)},setTimeout(){},clearTimeout(){}};
+ vm.runInNewContext(code,context);buttonEvents.click();assert.equal(button.attrs['aria-pressed'],'true');assert.deepEqual(Array.from(context.window.VICECORE_STORE.get('vicecore-bookmarks-v1',[])),['database:lucia','news:lucia-a-jason']);
+ buttonEvents.click();assert.equal(button.attrs['aria-pressed'],'false');
+ data['vicecore-bookmarks-v1']='["news:lucia-a-jason"]';globalEvents.storage.forEach(fn=>fn({key:'vicecore-bookmarks-v1'}));assert.equal(button.attrs['aria-pressed'],'true');
+ console.log('Passed: quota-limited storage keeps session updates; cross-tab storage changes refresh the cache and buttons.');
+}

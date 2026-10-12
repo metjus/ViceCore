@@ -8,6 +8,7 @@ ROOT=Path(__file__).resolve().parent
 runpy.run_path(str(ROOT/'redesign/generate.py'),run_name='__main__')
 runpy.run_path(str(ROOT/'redesign/portal.py'),run_name='__main__')
 runpy.run_path(str(ROOT/'redesign/trailer.py'),run_name='__main__')
+runpy.run_path(str(ROOT/'redesign/finish.py'),run_name='__main__')
 home=(ROOT/'sk/index.html').read_text().replace('../assets/','/assets/').replace('href="../manifest.webmanifest"','href="/manifest.webmanifest"').replace('data-root="../"','data-root="/"')
 (ROOT/'index.html').write_text(home)
 out=ROOT/'dist'
